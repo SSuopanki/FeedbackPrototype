@@ -76,6 +76,7 @@ const StarLabel = styled.label`
 `;
 
 const StyledTextArea = styled.textarea`
+  width: 25rem;
   height: 5rem;
 `;
 
