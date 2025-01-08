@@ -32,8 +32,6 @@ export const ReviewComment = ({
     setOpenTitle("Comment");
   };
 
-  console.log("proComments: ", proComments);
-
   return (
     <div>
       {CommentButton}

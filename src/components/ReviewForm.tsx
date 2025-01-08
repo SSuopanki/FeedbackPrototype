@@ -7,13 +7,35 @@ interface IFormInput {
   title: string;
   feedback: string;
   rating: number;
+  likes: number;
+  dislikes: number;
+  username: string;
+  //Placeholder type for easier testing
+  date: string;
+
 }
-export const ReviewForm = ({ handleAddReview }: { handleAddReview: (review: IFormInput) => void }) => {
+export const ReviewForm = ({
+  handleAddReview,
+}: {
+  handleAddReview: (review: IFormInput) => void;
+}) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [totalStars] = useState(5);
+  const [userName] = useState("testUser")
 
-  const { register, handleSubmit } = useForm<IFormInput>();
+  const { register, handleSubmit } = useForm<IFormInput>({
+    defaultValues: {
+      title: "",
+      feedback: "",
+      rating: 0,
+      likes:0,
+      dislikes: 0,
+      username: userName,
+      //Placeholder date, new Date()
+      date: "2024-02-14"
+    },
+  });
   const onSubmit: SubmitHandler<IFormInput> = (data) => handleAddReview(data);
 
   return (
@@ -21,7 +43,10 @@ export const ReviewForm = ({ handleAddReview }: { handleAddReview: (review: IFor
       <TitleDiv>
         <GridDiv>
           <label>Title</label>
-          <StyledInput {...register("title")} />
+          <StyledInput
+            {...(register("title"),
+            { required: true, minLength: 5, maxLength: 30 })}
+          />
         </GridDiv>
         <StarsDiv>
           {[...Array(totalStars)].map((_star, index) => {
@@ -30,7 +55,7 @@ export const ReviewForm = ({ handleAddReview }: { handleAddReview: (review: IFor
             return (
               <StarLabel key={index}>
                 <input
-                  {...register("rating")}
+                  {...(register("rating"), { required: true })}
                   type="radio"
                   name="rating"
                   value={currentRating}
@@ -50,7 +75,10 @@ export const ReviewForm = ({ handleAddReview }: { handleAddReview: (review: IFor
       </TitleDiv>
       <GridDiv>
         <label>Feedback</label>
-        <StyledTextArea {...register("feedback")} />
+        <StyledTextArea
+          {...(register("feedback"),
+          { required: true, minLength: 10, maxLength: 500 })}
+        />
       </GridDiv>
       <SubmitButton type="submit" children="Submit" />
     </form>
