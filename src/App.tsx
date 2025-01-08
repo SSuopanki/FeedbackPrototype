@@ -1,29 +1,50 @@
 import "./App.css";
 import ReviewForm from "./components/ReviewForm";
 import Review from "./components/Review";
+import { mockData } from "./components/MockData/mockdata";
+import { useState } from "react";
 
-interface TReview {
-  username: string;
+// interface TReview {
+//   username: string;
+//   title: string;
+//   text: string;
+//   stars: number;
+//   likes: number;
+//   dislikes: number;
+//   date: string;
+// }
+
+
+interface IFormInput {
   title: string;
-  text: string;
-  stars: number;
-  likes: number;
-  dislikes: number;
-  date: string;
+  feedback: string;
+  rating: number;
 }
 
-const data: TReview = {
-  username: "John Doe",
-  title: "Great product",
-  text: "I really like this product. It is very useful.",
-  stars: 4,
-  likes: 10,
-  dislikes: 2,
-  date: "2024-02-14",
-};
-
 const App = () => {
-  return <><div>{ReviewForm()}</div><div>{Review(data)}</div></>;
+  const [reviews, setReviews] = useState(mockData);
+
+  const handleAddReview = (review: IFormInput) => {
+    const newReview = {
+      comments: [],
+      username: 'TestUser',
+      date: new Date().toISOString().split('T')[0],
+      productId: '1234',
+      dislikes: 0,
+      likes: 0,
+      stars: review.rating,
+      title: review.title,
+      text: review.feedback,
+
+    }
+    setReviews([...reviews, newReview]);
+  };
+  return (
+    <>
+      <div><ReviewForm handleAddReview={handleAddReview} /></div>
+      <div><Review data={reviews} /></div>
+    </>
+  );
 };
 
 export default App;

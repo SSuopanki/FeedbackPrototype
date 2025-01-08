@@ -8,13 +8,13 @@ interface IFormInput {
   feedback: string;
   rating: number;
 }
-const reviewForm = () => {
+export const ReviewForm = ({ handleAddReview }: { handleAddReview: (review: IFormInput) => void }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [totalStars] = useState(5);
 
   const { register, handleSubmit } = useForm<IFormInput>();
-  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<IFormInput> = (data) => handleAddReview(data);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -92,4 +92,4 @@ const SubmitButton = styled.button`
   margin-top: 2rem;
 `;
 
-export default reviewForm;
+export default ReviewForm;

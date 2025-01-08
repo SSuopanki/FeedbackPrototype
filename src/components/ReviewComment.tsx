@@ -2,12 +2,19 @@ import styled from "@emotion/styled";
 import { useState } from "react";
 
 interface IFormInput {
-  reviewId: string;
-  comment: string;
+  comments?: Array<{ comment: string; productId: string }>;
+  productId: string;
+  saveComment: (comment: { comment: string; productId: string }) => void;
 }
 
-const ReviewComment = () => {
+export const ReviewComment = ({
+  saveComment,
+  comments,
+  productId,
+}: IFormInput) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [proComments, setProComments] = useState(comments ?? []);
+  const [commentValue, setCommentValue] = useState("");
   const [openTitle, setOpenTitle] = useState("Comment");
 
   const handleOpen = () => {
@@ -17,21 +24,34 @@ const ReviewComment = () => {
   const CommentButton = (
     <StyledCommentButton onClick={handleOpen}>{openTitle}</StyledCommentButton>
   );
-  const handleComment = () => {
+  const handleComment = (comment: string) => {
     // Implement comment handling here
+    setProComments((prevComments) => [...prevComments, { comment, productId }]);
+    saveComment({ comment, productId });
     setIsOpen(false);
     setOpenTitle("Comment");
   };
+
+  console.log("proComments: ", proComments);
 
   return (
     <div>
       {CommentButton}
       {isOpen && (
-        <div>
-          <StyledTextArea placeholder="Write comment here" />
-          <button onClick={handleComment}>Send</button>
-        </div>
+        <>
+          <div>
+            <StyledTextArea
+              value={commentValue}
+              onChange={(event) => setCommentValue(event.target.value)}
+              placeholder="Write comment here"
+            />
+            <button onClick={() => handleComment(commentValue)}>Send</button>
+          </div>
+        </>
       )}
+      {proComments.map((proCom, index) => (
+        <div key={index}>{proCom.comment}</div>
+      ))}
     </div>
   );
 };

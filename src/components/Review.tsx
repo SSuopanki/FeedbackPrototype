@@ -11,10 +11,12 @@ interface TReview {
   likes: number;
   dislikes: number;
   date: string;
+  productId: string;
+  comments: Array<{ comment: string; productId: string }>;
 }
 
-const Review = (data: TReview) => {
-  const { username, title, text, stars, likes, dislikes, date } = data;
+export const Review = ({ data }: { data: Array<TReview> }) => {
+  const [reviews, setReviews] = useState(data ?? []);
   const [showReviews, setShowReviews] = useState(false);
   const [revTitle, setRevTitle] = useState("Show reviews");
 
@@ -22,38 +24,70 @@ const Review = (data: TReview) => {
     setShowReviews(!showReviews);
     setRevTitle(showReviews ? "Show reviews" : "Hide reviews");
   };
+
+  const handleCommentSave = (comment: {
+    comment: string;
+    productId: string;
+  }) => {
+    const currentReview = reviews.find(
+      (review) => review.productId === comment.productId
+    );
+    if (currentReview) {
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review.productId === comment.productId
+            ? { ...review, comments: [...(review.comments || []), comment] }
+            : review
+        )
+      );
+    }
+  };
+
   return (
     <ContentDiv>
       <button onClick={handleShowReviews}>{revTitle}</button>
-      {showReviews && (
-        <ReviewDiv>
-          <ReviewContent>
-            <Title>{title}</Title>
-            <div>
-              {[...Array(5)].map((_star, index) => {
-                const currentRating = index + 1;
+      {reviews.map(
+        (review) =>
+          showReviews && (
+            <ReviewDiv key={review.title}>
+              <ReviewContent>
+                <Title>{review.title}</Title>
+                <div>
+                  {[...Array(5)].map((_star, index) => {
+                    const currentRating = index + 1;
 
-                return (
-                  <StarLabel key={index}>
-                    <StarSpan active={currentRating <= stars}>&#9733;</StarSpan>
-                  </StarLabel>
-                );
-              })}
-            </div>
-          </ReviewContent>
-          <p>{text}</p>
-          <ReviewInfo>
-            <div>
-              <div>{username}</div>
-              <div>{date}</div>
-            </div>
-            <LikeInfo>
-              <Like onClick={() => console.log('add like')}>Likes: {likes}</Like>
-              <Like onClick={() => console.log('add dislike')}>Dislikes: {dislikes}</Like>
-            </LikeInfo>
-          </ReviewInfo>
-          <ReviewComment />
-        </ReviewDiv>
+                    return (
+                      <StarLabel key={index}>
+                        <StarSpan active={currentRating <= review.stars}>
+                          &#9733;
+                        </StarSpan>
+                      </StarLabel>
+                    );
+                  })}
+                </div>
+              </ReviewContent>
+              <p>{review.text}</p>
+              <ReviewInfo>
+                <div>
+                  <div>{review.username}</div>
+                  <div>{review.date}</div>
+                </div>
+                <LikeInfo>
+                  <Like onClick={() => console.log("add like")}>
+                    Likes: {review.likes}
+                  </Like>
+                  <Like onClick={() => console.log("add dislike")}>
+                    Dislikes: {review.dislikes}
+                  </Like>
+                </LikeInfo>
+              </ReviewInfo>
+              <ReviewComment
+                saveComment={handleCommentSave}
+                productId={review.productId}
+                comments={review.comments}
+              />
+            </ReviewDiv>
+          )
       )}
     </ContentDiv>
   );
